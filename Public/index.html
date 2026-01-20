@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>NGO Support - Login</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 50px;
+    }
+
+    .form-container {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      margin: 10px 0;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-container">
+    <h2 id="title" style="text-align:center;">Login</h2>
+
+    <input type="text" id="name" placeholder="Full Name" style="display:none;">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="handleSubmit()" id="btn">Login</button>
+
+    <p id="toggle-text" onclick="toggleForm()"
+      style="color:blue; cursor:pointer; font-size: 14px; margin-top:15px; text-align:center;">
+      Need an account? <b>Register here</b>
+    </p>
+  </div>
+  <script>
+    let isLogin = true;
+
+    function toggleForm() {
+      isLogin = !isLogin; // Switch the state
+
+      const title = document.getElementById('title');
+      const btn = document.getElementById('btn');
+      const nameInput = document.getElementById('name');
+      const toggleText = document.getElementById('toggle-text');
+
+      if (isLogin) {
+        // Switch to Login Mode
+        title.innerText = 'Login';
+        btn.innerText = 'Login';
+        nameInput.style.display = 'none';
+        toggleText.innerHTML = 'Need an account? <b>Register here</b>';
+      } else {
+        // Switch to Register Mode
+        title.innerText = 'Register';
+        btn.innerText = 'Register';
+        nameInput.style.display = 'block';
+        toggleText.innerHTML = 'Already have an account? <b>Back to Login</b>';
+      }
+    }
+
+    async function handleSubmit() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('role', data.user.role);
+
+
+          if (data.user.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'user.html';
+          }
+        } else {
+          alert(data.msg);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    }
+  </script>
+</body>
+
+</html>
