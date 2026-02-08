@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || 'user' // Allow setting admin for testing
+      role: role || 'user' 
     });
 
     await user.save();
