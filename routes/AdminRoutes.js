@@ -8,7 +8,7 @@ router.get('/dashboard-stats', protect, admin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments({ role: 'user' });
 
-    // Aggregate total successful donation amount
+   
     const donationStats = await Donation.aggregate([
       { $match: { status: 'success' } },
       { $group: { _id: null, totalAmount: { $sum: "$amount" }, count: { $sum: 1 } } }
